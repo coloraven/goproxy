@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+//go:build !plan9
 // +build !plan9
 
 package renameio
@@ -9,7 +10,6 @@ package renameio
 import (
 	"encoding/binary"
 	"errors"
-	"io/ioutil"
 	"math/rand"
 	"os"
 	"path/filepath"
@@ -24,7 +24,7 @@ import (
 )
 
 func TestConcurrentReadsAndWrites(t *testing.T) {
-	dir, err := ioutil.TempDir("", "renameio")
+	dir, err := os.MkdirTemp("", "renameio")
 	if err != nil {
 		t.Fatal(err)
 	}

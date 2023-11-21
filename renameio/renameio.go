@@ -24,7 +24,7 @@ func Pattern(filename string) string {
 	return filepath.Join(filepath.Dir(filename), filepath.Base(filename)+patternSuffix)
 }
 
-// WriteFile is like ioutil.WriteFile, but first writes data to an arbitrary
+// WriteFile is like io.WriteFile, but first writes data to an arbitrary
 // file in the same directory as filename, then renames it atomically to the
 // final name.
 //
@@ -66,15 +66,15 @@ func WriteToFile(filename string, data io.Reader, perm os.FileMode) (err error) 
 	return robustio.Rename(f.Name(), filename)
 }
 
-// ReadFile is like ioutil.ReadFile, but on Windows retries spurious errors that
+// ReadFile is like io.ReadFile, but on Windows retries spurious errors that
 // may occur if the file is concurrently replaced.
 //
 // Errors are classified heuristically and retries are bounded, so even this
 // function may occasionally return a spurious error on Windows.
 // If so, the error will likely wrap one of:
-// 	- syscall.ERROR_ACCESS_DENIED
-// 	- syscall.ERROR_FILE_NOT_FOUND
-// 	- internal/syscall/windows.ERROR_SHARING_VIOLATION
+//   - syscall.ERROR_ACCESS_DENIED
+//   - syscall.ERROR_FILE_NOT_FOUND
+//   - internal/syscall/windows.ERROR_SHARING_VIOLATION
 func ReadFile(filename string) ([]byte, error) {
 	return robustio.ReadFile(filename)
 }

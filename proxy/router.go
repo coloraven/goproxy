@@ -5,7 +5,7 @@ import (
 	"compress/gzip"
 	"crypto/tls"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"net/http/httputil"
@@ -55,7 +55,7 @@ func (router *Router) customModResponse(r *http.Response) error {
 				return err
 			}
 			defer gr.Close()
-			buf, err = ioutil.ReadAll(gr)
+			buf, err = io.ReadAll(gr)
 			if err != nil {
 				return err
 			}
@@ -63,15 +63,15 @@ func (router *Router) customModResponse(r *http.Response) error {
 			// rewrite content-length header due to the decompressed data will be refilled in the body
 			r.Header.Set("Content-Length", fmt.Sprint(len(buf)))
 		} else {
-			buf, err = ioutil.ReadAll(r.Body)
+			buf, err = io.ReadAll(r.Body)
 			if err != nil {
 				return err
 			}
 		}
-		r.Body = ioutil.NopCloser(bytes.NewReader(buf))
+		r.Body = io.NopCloser(bytes.NewReader(buf))
 		if buf != nil {
 			file := filepath.Join(router.opts.DownloadRoot, r.Request.URL.Path)
-			os.MkdirAll(path.Dir(file), os.ModePerm)
+			os.MkdirAll(filepath.ToSlash(filepath.Dir(file)), os.ModePerm)
 			err = renameio.WriteFile(file, buf, 0666)
 			if err != nil {
 				return err
@@ -103,21 +103,21 @@ func (router *Router) customModResponse(r *http.Response) error {
 				return err
 			}
 			defer gr.Close()
-			buf, err = ioutil.ReadAll(gr)
+			buf, err = io.ReadAll(gr)
 			if err != nil {
 				return err
 			}
 			resp.Header.Del("Content-Encoding")
 		} else {
-			buf, err = ioutil.ReadAll(resp.Body)
+			buf, err = io.ReadAll(resp.Body)
 			if err != nil {
 				return err
 			}
 		}
-		resp.Body = ioutil.NopCloser(bytes.NewReader(buf))
+		resp.Body = io.NopCloser(bytes.NewReader(buf))
 		if buf != nil {
 			file := filepath.Join(router.opts.DownloadRoot, r.Request.URL.Path)
-			os.MkdirAll(path.Dir(file), os.ModePerm)
+			os.MkdirAll(filepath.ToSlash(filepath.Dir(file)), os.ModePerm)
 			err = renameio.WriteFile(file, buf, 0666)
 			if err != nil {
 				return err

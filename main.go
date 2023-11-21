@@ -21,7 +21,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -217,7 +216,7 @@ func (*ops) List(ctx context.Context, mpath string) (proxy.File, error) {
 		log.Printf("make cache dir failed, err: %v.", err)
 		return nil, err
 	}
-	if err := ioutil.WriteFile(file, data, 0666); err != nil {
+	if err := os.WriteFile(file, data, 0666); err != nil {
 		return nil, err
 	}
 
